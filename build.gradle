@@ -15,6 +15,7 @@ tasks.register("Test") {
 }
 
 allprojects {
+
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin" && requested.name == "kotlin-reflect") {
@@ -22,4 +23,6 @@ allprojects {
             }
         }
     }
+
+
 }

@@ -3,7 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigation"
-    app:startDestination="@id/auth_navigation">
+    app:startDestination="@id/navigation_task">
+
+    <fragment
+        android:id="@+id/navigation_task"
+        tools:layout="@layout/fragment_navigate_main"
+        android:name="com.dn.vdp.base_mvvm.presentation.fragments.task.TaskFragment"
+        android:label="@string/title_navigate_main" />
 
     <include app:graph="@navigation/auth_navigation" />
 
