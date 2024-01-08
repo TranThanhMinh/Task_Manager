@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Base-MVVM</string>
+    <string name="title_activity_home">Màn hình trang chủ</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_dashboard">Bảng điều khiển</string>
+    <string name="title_notifications">Thông báo</string>
+    <string name="title_login">Đăng nhập</string>
+    <string name="title_navigate_main">Chuyển màn hình chính</string>
+    <string name="please_enter_email">Nhập email</string>
+    <string name="please_enter_password">Nhập mật khẩu</string>
+    <string name="no_account">Không có tài khoản?</string>
+    <string name="register">Đăng kí</string>
+    <string name="skip">Bỏ qua</string>
+</resources>

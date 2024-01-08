@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Base-MVVM</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_login">Login</string>
+    <string name="title_navigate_main">Navigate Main</string>
+    <string name="please_enter_email">Please enter email</string>
+    <string name="please_enter_password">Please enter password</string>
+    <string name="no_account">No Account?</string>
+    <string name="register">Register</string>
+    <string name="skip">Skip</string>
+</resources>
