@@ -43,7 +43,7 @@ class ScreenReceiver : BroadcastReceiver() {
                     Log.e("keshav", "ACTION_SCREEN_ON  ")
                 } else if (intent.action.equals("android.intent.action.REMIND_MUSIC")) {
                     Log.e("keshav", "android.intent.action.REMIND_MUSIC")
-                    setAlarmRemind(context, 15, 57, "android.intent.action.NOTIFICATION_MUSIC")
+                    setAlarmRemind(context, 16, 12, "android.intent.action.NOTIFICATION_MUSIC")
                 } else if (intent.action.equals("android.intent.action.NOTIFICATION_MUSIC")) {
                     Log.e("keshav", "android.intent.action.NOTIFICATION_MUSIC")
                     val alarmSound =
@@ -141,33 +141,40 @@ class ScreenReceiver : BroadcastReceiver() {
             set(Calendar.SECOND, 0)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            when {
-                // If permission is granted, proceed with scheduling exact alarms.
-                alarmMgr?.canScheduleExactAlarms()!! -> {
-                    alarmMgr?.setInexactRepeating(
-                        AlarmManager.RTC_WAKEUP,
-                        calendar.timeInMillis,
-                        AlarmManager.INTERVAL_DAY,
-                        alarmRemidIntent!!
-                    )
-                }
+        alarmMgr?.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            alarmRemidIntent!!
+        )
 
-                else -> {
-                    // Ask users to go to exact alarm page in system settings.
-                    val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    context.startActivity(intent)
-                }
-            }
-        } else {
-                alarmMgr?.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    AlarmManager.INTERVAL_DAY,
-                    alarmRemidIntent!!
-                )
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            when {
+//                // If permission is granted, proceed with scheduling exact alarms.
+//                alarmMgr?.canScheduleExactAlarms()!! -> {
+//                    alarmMgr?.setInexactRepeating(
+//                        AlarmManager.RTC_WAKEUP,
+//                        calendar.timeInMillis,
+//                        AlarmManager.INTERVAL_DAY,
+//                        alarmRemidIntent!!
+//                    )
+//                }
+//
+//                else -> {
+//                    // Ask users to go to exact alarm page in system settings.
+//                    val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+//             //       intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                    context.startActivity(intent)
+//                }
+//            }
+//        } else {
+//                alarmMgr?.setInexactRepeating(
+//                    AlarmManager.RTC_WAKEUP,
+//                    calendar.timeInMillis,
+//                    AlarmManager.INTERVAL_DAY,
+//                    alarmRemidIntent!!
+//                )
+//        }
     }
 
     private fun setAlarm(context: Context, hour: Int, minute: Int, action: String) {
