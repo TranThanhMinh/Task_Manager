@@ -133,4 +133,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
+    //room data
+    implementation "androidx.room:room-runtime:2.2.4"
+    kapt "androidx.room:room-compiler:2.2.4"
+    implementation "androidx.room:room-ktx:2.2.5"
+
 }
+
+apply plugin: 'kotlin-kapt'

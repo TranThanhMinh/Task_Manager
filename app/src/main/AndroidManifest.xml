@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".application.MyApplication"
         android:allowBackup="true"
@@ -14,6 +16,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:exported="true"
+        android:preserveLegacyExternalStorage="true"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.BaseMVVM"
         tools:targetApi="31">
         <activity
@@ -31,6 +37,25 @@
             android:name=".presentation.activities.main.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
+
+        <service
+            android:name=".presentation.service.NotificationService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ALARM" />
+                <action android:name="android.intent.action.MISUC" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".presentation.service.ScreenReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.REMIND_MUSIC" />
+                <action android:name="android.intent.action.NOTIFICATION_MUSIC" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
