@@ -23,7 +23,7 @@ class ColorAdapter(var list: ArrayList<Int>,val click : ((Int)->Unit)?=null) : R
         holder.ll_color.setOnClickListener {click!!.invoke(list[position])  }
         if (color == list[position])
             holder.ll_color.setBackgroundResource(R.color.red)
-        else     holder.ll_color.setBackgroundResource(R.color.white)
+        else     holder.ll_color.setBackgroundResource(R.color.teal_800)
     }
 
     fun setPosition (color:Int){

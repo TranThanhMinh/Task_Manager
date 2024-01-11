@@ -11,6 +11,12 @@ interface TaskDao {
     @Query("SELECT * FROM Task")
     suspend fun getAll(): List<Task>
 
+    @Query("SELECT * FROM Task Where date BETWEEN :fromDate AND :toDate AND complete = '0'")
+    suspend fun getAllDateToDate(fromDate:String,toDate:String): List<Task>
+
+    @Query("SELECT * FROM Task Where date BETWEEN :fromDate AND :toDate AND complete = '1'")
+    suspend fun getAllHistoryDateToDate(fromDate:String,toDate:String): List<Task>
+
     @Insert
     suspend fun insertAll(task: Task)
 

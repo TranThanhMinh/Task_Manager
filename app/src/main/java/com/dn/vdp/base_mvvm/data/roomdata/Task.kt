@@ -9,5 +9,8 @@ data class Task(@PrimaryKey val id:String,
                 @ColumnInfo(name = "description") val description:String?,
                 @ColumnInfo(name = "date") val date:String?,
                 @ColumnInfo(name = "time") val time:String?,
-                @ColumnInfo(name = "color") val color:Int) {
+                @ColumnInfo(name = "color") val color:Int,
+                @ColumnInfo(name = "reason") val reason:String?,
+                @ColumnInfo(name = "complete") val complete:Int
+) {
 }

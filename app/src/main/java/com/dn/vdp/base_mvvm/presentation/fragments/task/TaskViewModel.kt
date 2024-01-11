@@ -28,6 +28,29 @@ class TaskViewModel @Inject constructor(val dbHelper : DatabaseHelperImpl) : Bas
         }
     }
 
+    fun fetchTaskDateToDate(fromDate:String,toDate:String) {
+        viewModelScope.launch {
+            try {
+                val allTask = dbHelper.getTaskDateToDate(fromDate,toDate)
+                actionFlow.value = Tasks.getTask(allTask as ArrayList)
+                // here you have your CoursesFromDb
+            } catch (e: Exception) {
+                // handler error
+            }
+        }
+    }
+
+    fun fetchTaskHistoryDateToDate(fromDate:String,toDate:String) {
+        viewModelScope.launch {
+            try {
+                val allTask = dbHelper.getTaskHistoryDateToDate(fromDate,toDate)
+                actionFlow.value = Tasks.getTask(allTask as ArrayList)
+                // here you have your CoursesFromDb
+            } catch (e: Exception) {
+                // handler error
+            }
+        }
+    }
 
    fun insert(task: Task){
        viewModelScope.launch {
@@ -38,6 +61,12 @@ class TaskViewModel @Inject constructor(val dbHelper : DatabaseHelperImpl) : Bas
     fun update(task: Task){
         viewModelScope.launch {
             dbHelper.update(task)
+        }
+    }
+
+    fun delete(task: Task){
+        viewModelScope.launch {
+            dbHelper.delete(task)
         }
     }
     sealed class Tasks {

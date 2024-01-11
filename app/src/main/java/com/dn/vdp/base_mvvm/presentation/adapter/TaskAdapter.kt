@@ -1,5 +1,6 @@
 package com.dn.vdp.base_mvvm.presentation.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dn.vdp.base_mvvm.R
 import com.dn.vdp.base_mvvm.data.roomdata.Task
 
-class TaskAdapter(val click: ((Task) -> Unit)? = null) :
+class TaskAdapter(val click: ((Task) -> Unit)? = null, val done: ((Task) -> Unit)? = null) :
     RecyclerView.Adapter<TaskAdapter.MyViewHolder>() {
     var color: Int = R.color.black
     var list: ArrayList<Task> = ArrayList()
@@ -32,13 +33,28 @@ class TaskAdapter(val click: ((Task) -> Unit)? = null) :
             ll_color.setBackgroundResource(list[position].color)
             tv_description.text = list[position].description
             tv_date_time.text = list[position].date + " " + list[position].time
-            ll_color.setOnClickListener {
-                click!!.invoke(list[position])
+
+            if (list[position].reason != "") {
+                tv_reason.text = "Note: ${list[position].reason}"
+                tv_reason.visibility = View.VISIBLE
+                tv_done.visibility = View.GONE
+                ll_color.setOnClickListener(null)
+            } else {
+                tv_reason.visibility = View.GONE
+                tv_done.visibility = View.VISIBLE
+                ll_color.setOnClickListener {
+                    click!!.invoke(list[position])
+                }
+            }
+
+            tv_done.setOnClickListener {
+                done!!.invoke(list[position])
             }
         }
     }
 
     fun setData(list: ArrayList<Task>) {
+        this.list.removeAll { true }
         this.list = list
         notifyDataSetChanged()
     }
@@ -53,5 +69,7 @@ class TaskAdapter(val click: ((Task) -> Unit)? = null) :
         val tv_date_time = v.findViewById<TextView>(R.id.tv_date_time)
         val tv_line = v.findViewById<TextView>(R.id.tv_line)
         val tv_line_2 = v.findViewById<TextView>(R.id.tv_line_2)
+        val tv_done = v.findViewById<TextView>(R.id.tv_done)
+        val tv_reason = v.findViewById<TextView>(R.id.tv_reason)
     }
 }

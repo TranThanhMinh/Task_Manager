@@ -48,7 +48,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         develop {
-            applicationId "com.dn.vdp.base_mvvm_dev"
+            applicationId "com.dn.vdp.dev.task"
         }
         staging {
             applicationId "com.dn.vdp.base_mvvm_stg"

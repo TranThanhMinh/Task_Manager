@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Base-MVVM</string>
+    <string name="app_name">Task</string>
     <string name="title_activity_home">Màn hình trang chủ</string>
     <string name="title_home">Trang chủ</string>
     <string name="title_dashboard">Bảng điều khiển</string>

@@ -57,9 +57,9 @@ class ScreenReceiver : BroadcastReceiver() {
 
                     val builder: NotificationCompat.Builder =
                         NotificationCompat.Builder(context, default_notification_channel_id)
-                    builder.setContentTitle("Music Player - MP3 Music")
-                    builder.setContentText("Relax after a stressful day")
-                    builder.setSmallIcon(R.drawable.bg_icon)
+                    builder.setContentTitle("Task Manager")
+                    builder.setContentText("Please check the quest list")
+                    builder.setSmallIcon(R.drawable.ic_app)
                     builder.setSound(alarmSound)
                     builder.setAutoCancel(true)
                     builder.setChannelId(NOTIFICATION_CHANNEL_ID)
