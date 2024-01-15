@@ -29,6 +29,7 @@ class SplashActivity @Inject constructor() : Activity() {
             startActivity(intent)
             finish()
         }, 2000L)
+
     }
 
     fun changeStatusBarColor(color: Int) {

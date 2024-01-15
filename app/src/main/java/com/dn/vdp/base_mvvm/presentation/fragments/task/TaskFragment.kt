@@ -58,6 +58,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
     var mAdd: Boolean = false
     var mSelect: String = "To day"
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun setupViews() {
         changeStatusBarColor(R.color.white)
@@ -227,7 +228,6 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         val daysInMonth: Int = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
         mFromDate = "01/${sdf.format(cal.time)}/${sdf2.format(cal.time)}"
         mToDate = "$daysInMonth/${sdf.format(cal.time)}/${sdf2.format(cal.time)}"
-        Log.e("getMonth2", "$mFromDate $mToDate $daysInMonth")
         getTask()
     }
 
