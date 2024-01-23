@@ -1,18 +1,26 @@
 package com.dn.vdp.base_mvvm.presentation.adapter
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.dn.vdp.base_mvvm.R
 import com.dn.vdp.base_mvvm.data.roomdata.Task
 
-class TaskAdapter(val click: ((Task) -> Unit)? = null, val done: ((Task) -> Unit)? = null) :
+class TaskAdapter(
+    val click: ((Task) -> Unit)? = null,
+    val done: ((Task) -> Unit)? = null,
+    val context: Context
+) :
     RecyclerView.Adapter<TaskAdapter.MyViewHolder>() {
-    var color: Int = R.color.black
+    var color: Int = R.color.color_1
     var list: ArrayList<Task> = ArrayList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
@@ -20,7 +28,6 @@ class TaskAdapter(val click: ((Task) -> Unit)? = null, val done: ((Task) -> Unit
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-
         holder.apply {
             if (position == 0) {
                 tv_line.visibility = View.INVISIBLE
@@ -30,9 +37,17 @@ class TaskAdapter(val click: ((Task) -> Unit)? = null, val done: ((Task) -> Unit
                 tv_line_2.visibility = View.INVISIBLE
             } else tv_line_2.visibility = View.VISIBLE
 
-            ll_color.setBackgroundResource(list[position].color)
+            //   ll_color.setBackgroundResource(list[position].color)
+
+            holder.ll_color.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(context, list[position].color))
             tv_description.text = list[position].description
             tv_date_time.text = list[position].date + " " + list[position].time
+            if ((list[position].alarm == 0))
+                img_alarm.setImageDrawable(context.resources.getDrawable(R.drawable.baseline_alarm_off_24))
+            else img_alarm.setImageDrawable(context.resources.getDrawable(R.drawable.baseline_alarm_on_24))
+
+            Log.e("MyViewHolder","${list[position].description} ${list[position].alarm}")
 
             if (list[position].reason != "") {
                 tv_reason.text = "Note: ${list[position].reason}"
@@ -71,5 +86,6 @@ class TaskAdapter(val click: ((Task) -> Unit)? = null, val done: ((Task) -> Unit
         val tv_line_2 = v.findViewById<TextView>(R.id.tv_line_2)
         val tv_done = v.findViewById<TextView>(R.id.tv_done)
         val tv_reason = v.findViewById<TextView>(R.id.tv_reason)
+        val img_alarm = v.findViewById<ImageView>(R.id.img_alarm)
     }
 }

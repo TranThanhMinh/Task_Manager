@@ -14,6 +14,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.dn.vdp.base_mvvm.R
 import com.dn.vdp.base_mvvm.data.local.prefrence.SharedPrefs
 
@@ -38,16 +39,11 @@ class NotificationService:Service() {
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.ic_app)
             .setPriority(Notification.PRIORITY_MIN)
-            .setContentTitle("Task")
-            .setContentText("Task")
+            .setContentTitle("Task Manager")
+            .setContentText("My Task")
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(SERVICE_ID, notification)
-        } else {
-            startForeground(SERVICE_ID, notification,
-                FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-        }
+        startForeground(SERVICE_ID, notification)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -55,6 +51,8 @@ class NotificationService:Service() {
         val intentFilter = IntentFilter()
         intentFilter.addAction("android.intent.action.NOTIFICATION_MUSIC")
         intentFilter.addAction("android.intent.action.REMIND_MUSIC")
+        intentFilter.addAction("android.intent.action.START_ALARM")
+        intentFilter.addAction("android.intent.action.STOP_ALARM")
         registerReceiver(screenReceiver, intentFilter,RECEIVER_EXPORTED)
         val remind = SharedPrefs.instance[mRemind, Int::class.java]
         if(remind == 0){

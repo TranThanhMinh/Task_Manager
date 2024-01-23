@@ -38,24 +38,26 @@
         android:id="@+id/ll_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:layout_marginVertical="5dp"
+        android:layout_marginVertical="10dp"
+        android:layout_marginRight="5dp"
         android:orientation="vertical"
+        android:backgroundTint="@color/teal_800"
+        android:background="@drawable/border_task"
         android:paddingVertical="5dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <TextView
                 android:id="@+id/tv_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
+                android:layout_marginHorizontal="10dp"
                 android:layout_toLeftOf="@+id/tv_done"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:text=""
-                android:textColor="@color/white" />
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tv_done"
@@ -75,17 +77,19 @@
             android:id="@+id/tv_reason"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
+            android:layout_marginHorizontal="10dp"
             android:text=""
             android:textSize="13sp"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="horizontal"
             android:padding="5dp">
 
             <ImageView
+                android:id="@+id/img_alarm"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:src="@drawable/baseline_access_time_24" />
@@ -96,8 +100,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text=""
-                android:textColor="@color/gray"
-                android:textSize="13sp" />
+                android:textColor="@color/black"
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 

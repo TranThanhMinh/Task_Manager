@@ -18,7 +18,7 @@ class TimeAdapter(var list: ArrayList<String>, val click : ((String)->Unit)?=nul
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.apply {
             if (mSelect == list[position])
-                tv_time.setBackgroundResource(R.drawable.border_time_1)
+                tv_time.setBackgroundResource(R.drawable.border_time)
             else    tv_time.setBackgroundResource(R.drawable.border_time_2)
             tv_time.text = list[position]
             holder.ll_time.setOnClickListener {click!!.invoke(list[position])  }

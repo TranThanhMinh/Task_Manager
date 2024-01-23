@@ -2,7 +2,9 @@ package com.dn.vdp.base_mvvm.presentation.fragments.task
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
@@ -45,7 +47,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
     var taskAdapter: TaskAdapter? = null
     var listColor: ArrayList<Int>? = null
     var listTime: ArrayList<String>? = null
-    var color: Int = R.color.purple_200
+    var color: Int = R.color.color_1
     var mDescription: String = ""
     var mDate: String = ""
     var mTime: String = ""
@@ -56,7 +58,9 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
     var mToDate: String = ""
     var mHistory: Boolean = false
     var mAdd: Boolean = false
+    var mAlarm: Int = 0
     var mSelect: String = "To day"
+    var oldTask: Task? = null
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -65,17 +69,18 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         getToday()
 
         listColor = ArrayList()
-        listColor?.add(R.color.purple_200)
-        listColor?.add(R.color.teal_200)
-        listColor?.add(R.color.teal_700)
-        listColor?.add(R.color.purple_500)
-        listColor?.add(R.color.purple_700)
+        listColor?.add(R.color.color_1)
+        listColor?.add(R.color.color_2)
+        listColor?.add(R.color.color_3)
+        listColor?.add(R.color.color_4)
+        listColor?.add(R.color.color_5)
 
         listTime = ArrayList()
         listTime?.add("To day")
         listTime?.add("Weekend")
         listTime?.add("Month")
         listTime?.add("Select day")
+
 
         binding.apply {
             imgHistory.setOnClickListener {
@@ -96,18 +101,21 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                 getToday()
             }
 
-            taskAdapter = TaskAdapter(click = {
-                mDescription = it.description!!
-                mDate = it.date!!
-                mTime = it.time!!
-                mUuid = it.id!!
-                color = it.color
-                mReason = it.reason!!
-                mComplete = it.complete
-                mAdd = false
-                bottomsheet()
-                colorAdapter!!.setPosition(color)
-            },
+            taskAdapter = TaskAdapter(
+                click = {
+                    oldTask = it
+                    mDescription = it.description!!
+                    mDate = it.date!!
+                    mTime = it.time!!
+                    mUuid = it.id!!
+                    color = it.color
+                    mReason = it.reason!!
+                    mComplete = it.complete
+                    mAlarm = it.alarm
+                    mAdd = false
+                    bottomsheet()
+                    colorAdapter!!.setPosition(color)
+                },
                 done = {
                     mDescription = it.description!!
                     mDate = it.date!!
@@ -116,8 +124,10 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                     color = it.color
                     mReason = it.reason!!
                     mComplete = it.complete
+                    mAlarm = it.alarm
                     showDialog()
-                })
+                }, requireContext()
+            )
 
             val layout =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -141,7 +151,9 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
             mDate = ""
             mTime = ""
             mUuid = ""
-            color = R.color.purple_200
+            mComplete = 0
+            mAlarm = 0
+            color = R.color.color_1
             bottomsheet()
         }
     }
@@ -234,7 +246,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
     private fun bottomsheet() {
         mUuid = if (mUuid == "") java.util.UUID.randomUUID().toString() else mUuid
         // on below line we are creating a new bottom sheet dialog.
-        val dialog = BottomSheetDialog(requireContext())
+        val dialog = BottomSheetDialog(requireContext(), R.style.TransparentDialog)
 
         // on below line we are inflating a layout file which we have created.
         val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
@@ -245,31 +257,49 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         val tv_delete = view.findViewById<TextView>(R.id.tv_delete)
         val tv_update = view.findViewById<TextView>(R.id.tv_update)
         val btnClose = view.findViewById<ImageView>(R.id.img_close)
+        val img_alarm = view.findViewById<ImageView>(R.id.img_alarm)
         val rv_color = view.findViewById<RecyclerView>(R.id.ll_color)
         val tv_date = view.findViewById<TextView>(R.id.tv_date)
         val tv_time = view.findViewById<TextView>(R.id.tv_time)
         val edit_description = view.findViewById<EditText>(R.id.edit_description)
         val ll_update = view.findViewById<LinearLayout>(R.id.ll_update)
 
+        val date = getCurrentDateTime()
         if (mAdd) {
             ll_update.visibility = View.GONE
             tv_create.visibility = View.VISIBLE
+            mDate = date.toString("dd/MM/yyyy")
+            mTime = date.toString("HH:mm")
         } else {
             ll_update.visibility = View.VISIBLE
             tv_create.visibility = View.GONE
+
         }
         colorAdapter = ColorAdapter(listColor!!, click = {
             color = (it)
             colorAdapter!!.setPosition(it)
-        })
+        }, requireContext())
 
-        val date = getCurrentDateTime()
-        val dateInString = date.toString("dd/MM/yyyy")
-        val timeInString = date.toString("HH:mm")
 
-        tv_date.text = if (mDate == "") dateInString else mDate
-        tv_time.text = if (mTime == "") timeInString else mTime
+        tv_date.text = mDate
+        tv_time.text = mTime
         edit_description.setText(mDescription)
+
+        if (mAlarm == 1) {
+            img_alarm.setImageDrawable(resources.getDrawable(R.drawable.baseline_alarm_on_24))
+        } else {
+            img_alarm.setImageDrawable(resources.getDrawable(R.drawable.baseline_alarm_off_24))
+        }
+
+        img_alarm.setOnClickListener {
+            if (mAlarm == 0) {
+                mAlarm = 1
+                img_alarm.setImageDrawable(resources.getDrawable(R.drawable.baseline_alarm_on_24))
+            } else {
+                mAlarm = 0
+                img_alarm.setImageDrawable(resources.getDrawable(R.drawable.baseline_alarm_off_24))
+            }
+        }
 
         //dialog date
         val c = Calendar.getInstance()
@@ -280,7 +310,6 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         val dpd = DatePickerDialog(
             requireContext(),
             DatePickerDialog.OnDateSetListener { view, mYear, mMonth, mDay ->
-
                 // Display Selected date in textbox
                 val mmMonth = mMonth + 1
                 val d = if (mDay < 10) "0$mDay" else "$mDay"
@@ -308,10 +337,10 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         mTimePicker = TimePickerDialog(
             requireContext(),
             { view, hourOfDay, minute ->
-                var h = if (hourOfDay < 10) "0$hourOfDay" else "$hourOfDay"
-                var m = if (minute < 10) "0$minute" else "$minute"
-                tv_time.text = "$h:$m"
-                mTime = "$h:$m"
+                val mHour = if (hourOfDay < 10) "0$hourOfDay" else "$hourOfDay"
+                val mMinute = if (minute < 10) "0$minute" else "$minute"
+                tv_time.text = "$mHour:$mMinute"
+                mTime = "$mHour:$mMinute"
             }, hour, minute, false
         )
 
@@ -333,55 +362,94 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         }
 
         tv_create.setOnClickListener {
-            val task = Task(
-                mUuid,
-                edit_description.text.toString(),
-                tv_date.text.toString(),
-                tv_time.text.toString(),
-                color,
-                mReason,
-                mComplete
-            )
-            viewModel.insert(task)
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    getSelect()
-                }
+            if (edit_description.text.toString() == "") {
+                edit_description.error = "Cannot be empty"
+            } else {
+                val task = Task(
+                    mUuid,
+                    edit_description.text.toString(),
+                    tv_date.text.toString(),
+                    tv_time.text.toString(),
+                    color,
+                    mReason,
+                    mComplete,
+                    mAlarm
+                )
 
-            }, 1000)
-            dialog.dismiss()
+                val date = mDate.split("/")
+                val time = mTime.split(":")
+                setAlarm(
+                    date[0],
+                    date[1],
+                    date[2],
+                    time[0],
+                    time[1],
+                    date[0],
+                    date[1],
+                    date[2],
+                    time[0],
+                    time[1],
+                    mAlarm.toString()
+                )
+                viewModel.insert(task)
+                Timer().schedule(object : TimerTask() {
+                    override fun run() {
+                        getSelect()
+                    }
+
+                }, 1000)
+                dialog.dismiss()
+            }
         }
         tv_update.setOnClickListener {
-            val task = Task(
-                mUuid,
-                edit_description.text.toString(),
-                tv_date.text.toString(),
-                tv_time.text.toString(),
-                color,
-                mReason,
-                mComplete
-            )
-            viewModel.update(task)
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    getSelect()
-                }
+            if (edit_description.text.toString() == "") {
+                edit_description.error = "Cannot be empty"
+            } else {
+                val task = Task(
+                    mUuid,
+                    edit_description.text.toString(),
+                    tv_date.text.toString(),
+                    tv_time.text.toString(),
+                    color,
+                    mReason,
+                    mComplete,
+                    mAlarm
+                )
+                viewModel.update(task)
+                val date_old = oldTask!!.date!!.split("/")
+                val time_old = oldTask!!.time!!.split(":")
 
-            }, 1000)
-            dialog.dismiss()
+                val date = mDate.split("/")
+                val time = mTime.split(":")
+                setAlarm(
+                    date_old[0],
+                    date_old[1],
+                    date_old[2],
+                    time_old[0],
+                    time_old[1],
+                    date[0],
+                    date[1],
+                    date[2],
+                    time[0],
+                    time[1],
+                    mAlarm.toString()
+                )
+
+                Timer().schedule(object : TimerTask() {
+                    override fun run() {
+                        getSelect()
+                    }
+
+                }, 1000)
+                dialog.dismiss()
+            }
         }
 
         tv_delete.setOnClickListener {
-            val task = Task(
-                mUuid,
-                edit_description.text.toString(),
-                tv_date.text.toString(),
-                tv_time.text.toString(),
-                color,
-                mReason,
-                mComplete
-            )
-            viewModel.delete(task)
+            viewModel.delete(oldTask!!)
+            val date_old = mDate.split("/")
+            val time_old = mTime.split(":")
+            cancelAlarm(date_old[0], date_old[1], date_old[2], time_old[0], time_old[1])
             Timer().schedule(object : TimerTask() {
                 override fun run() {
                     getSelect()
@@ -401,6 +469,49 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         // on below line we are calling
         // a show method to display a dialog.
         dialog.show()
+    }
+
+    private fun setAlarm(
+        d_old: String,
+        m_old: String,
+        y_old: String, hour_old: String, minute_old: String,
+        d: String,
+        m: String,
+        y: String, hour: String, minute: String, mAlarm: String
+    ) {
+        val intent = Intent("android.intent.action.START_ALARM")
+        val bundle = Bundle()
+        bundle.putString("d_old", d_old)
+        bundle.putString("m_old", m_old)
+        bundle.putString("y_old", y_old)
+        bundle.putString("hour_old", hour_old)
+        bundle.putString("minute_old", minute_old)
+
+        bundle.putString("d", d)
+        bundle.putString("m", m)
+        bundle.putString("y", y)
+        bundle.putString("hour", hour)
+        bundle.putString("minute", minute)
+        bundle.putString("mAlarm", mAlarm)
+        intent.putExtras(bundle)
+        requireContext().sendBroadcast(intent)
+    }
+
+    private fun cancelAlarm(
+        d_old: String,
+        m_old: String,
+        y_old: String, hour_old: String, minute_old: String,
+    ) {
+        val intent = Intent("android.intent.action.STOP_ALARM")
+        val bundle = Bundle()
+        bundle.putString("d_old", d_old)
+        bundle.putString("m_old", m_old)
+        bundle.putString("y_old", y_old)
+        bundle.putString("hour_old", hour_old)
+        bundle.putString("minute_old", minute_old)
+
+        intent.putExtras(bundle)
+        requireContext().sendBroadcast(intent)
     }
 
     override fun bindViewModel() {
@@ -430,7 +541,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
 
     private fun showDialog() {
         // on below line we are creating a new bottom sheet dialog.
-        val dialog = BottomSheetDialog(requireContext())
+        val dialog = BottomSheetDialog(requireContext(), R.style.TransparentDialog)
 
         // on below line we are inflating a layout file which we have created.
         val view = layoutInflater.inflate(R.layout.dialog_reason, null)
@@ -453,6 +564,9 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                     1
                 )
                 viewModel.update(task)
+                val date_old = mDate.split("/")
+                val time_old = mTime.split(":")
+                cancelAlarm(date_old[0], date_old[1], date_old[2], time_old[0], time_old[1])
                 Timer().schedule(object : TimerTask() {
                     override fun run() {
                         getToday()
@@ -487,7 +601,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         //  set status text dark
-        var flags =View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        var flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         window.decorView.systemUiVisibility = flags  //SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         // finally change the color
         window.statusBarColor = ContextCompat.getColor(requireActivity(), color)

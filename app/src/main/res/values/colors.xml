@@ -11,5 +11,10 @@
     <color name="gray">#E1DFDF</color>
     <color name="gray_2">#6A6A6A</color>
     <color name="yellow">#FFEB3B</color>
+    <color name="color_1">#FFEB3B</color>
+    <color name="color_2">#9C27B0</color>
+    <color name="color_3">#03A9F4</color>
+    <color name="color_4">#4CAF50</color>
+    <color name="color_5">#3F51B5</color>
     <color name="teal_800">#DDF4F2</color>
 </resources>

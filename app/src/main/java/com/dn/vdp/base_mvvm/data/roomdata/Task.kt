@@ -11,6 +11,7 @@ data class Task(@PrimaryKey val id:String,
                 @ColumnInfo(name = "time") val time:String?,
                 @ColumnInfo(name = "color") val color:Int,
                 @ColumnInfo(name = "reason") val reason:String?,
-                @ColumnInfo(name = "complete") val complete:Int
+                @ColumnInfo(name = "complete") val complete:Int,
+                @ColumnInfo(name = "alarm") val alarm:Int = 0,
 ) {
 }

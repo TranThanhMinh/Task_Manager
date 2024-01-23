@@ -20,22 +20,17 @@ class RoomDataModule {
     fun provideYourDatabase(
         @ApplicationContext app: Context
     ) = run {
-//        val MIGRATION_1_2 = object : Migration(1, 2) {
-//            override fun migrate(database: SupportSQLiteDatabase) {
-//                database.execSQL("ALTER TABLE Task ADD COLUMN reason TEXT")
-//            }
-//        }
-//
-//        val MIGRATION_2_3 = object : Migration(2, 3) {
-//            override fun migrate(database: SupportSQLiteDatabase) {
-//                database.execSQL("ALTER TABLE Task ADD COLUMN complete INTEGER")
-//            }
-//        }
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE 'Task' ADD COLUMN 'alarm' INTEGER NOT NULL DEFAULT 0")
+            }
+        }
         Room.databaseBuilder(
             app,
             AppDatabase::class.java,
             "roomdata"
-        ).build() // The reason we can construct a database for the repo
+        ).addMigrations(MIGRATION_1_2).build() // The reason we can construct a database for the repo
     }
 
     @Singleton
