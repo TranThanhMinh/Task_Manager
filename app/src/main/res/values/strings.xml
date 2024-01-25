@@ -21,4 +21,7 @@
     <string name="txt_list">List Task</string>
     <string name="txt_note">Note</string>
     <string name="txt_done">Done</string>
+    <string name="txt_delete_task">Delete</string>
+    <string name="txt_from_date">From date</string>
+    <string name="txt_to_date">To date</string>
 </resources>

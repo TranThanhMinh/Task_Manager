@@ -61,7 +61,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
     var mAlarm: Int = 0
     var mSelect: String = "To day"
     var oldTask: Task? = null
-
+    var listSelect: ArrayList<Task> = ArrayList()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun setupViews() {
@@ -101,6 +101,10 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                 getToday()
             }
 
+            tvDelete.setOnClickListener {
+                showDeleteDialog()
+            }
+
             taskAdapter = TaskAdapter(
                 click = {
                     oldTask = it
@@ -126,6 +130,13 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                     mComplete = it.complete
                     mAlarm = it.alarm
                     showDialog()
+                },
+                select = {
+                    listSelect = it
+                    if (it.size>0)
+                        tvDelete.visibility = View.VISIBLE
+                    else tvDelete.visibility = View.GONE
+
                 }, requireContext()
             )
 
@@ -173,52 +184,32 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
             }
 
             "Select day" -> {
-                val c = Calendar.getInstance()
-                val year = c.get(Calendar.YEAR)
-                val month = c.get(Calendar.MONTH)
-                val day = c.get(Calendar.DAY_OF_MONTH)
+                showSelectDateDialog()
 
-                val dpd = DatePickerDialog(
-                    requireContext(),
-                    DatePickerDialog.OnDateSetListener { view, mYear, mMonth, mDay ->
-                        // Display Selected date in textbox
-                        val mmMonth = mMonth + 1
-                        val d = if (mDay < 10) "0$mDay" else "$mDay"
-                        val m = if (mmMonth < 10) "0$mmMonth" else "$mmMonth"
-
-                        val date = "$d/$m/$mYear"
-                        mFromDate = date
-                        mToDate = date
-
-                        getTask()
-                    },
-                    year,
-                    month,
-                    day
-                )
-
-                dpd.show()
             }
         }
     }
 
     private fun getToday() {
         val date = getCurrentDateTime()
-        val dateInString = date.toString("dd/MM/yyyy")
+        val dateInString = date.toString("yyyy/MM/dd")
         mFromDate = dateInString
         mToDate = dateInString
         getTask()
     }
 
     private fun getTask() {
+    //    convertDate()
+        Log.e("getTask","${mFromDate} ${mToDate}")
         if (mHistory) viewModel.fetchTaskHistoryDateToDate(mFromDate, mToDate) else
             viewModel.fetchTaskDateToDate(mFromDate, mToDate)
     }
 
+
     private fun getWeekend() {
         val cal = Calendar.getInstance()
         cal[Calendar.DAY_OF_WEEK] = cal.firstDayOfWeek
-        val sdf = SimpleDateFormat("dd/MM/yyyy")
+        val sdf = SimpleDateFormat("yyyy/MM/dd")
 
         for (i in 0..6) {
             if (i == 0) {
@@ -238,9 +229,18 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         val sdf = SimpleDateFormat("MM")
         val sdf2 = SimpleDateFormat("yyyy")
         val daysInMonth: Int = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
-        mFromDate = "01/${sdf.format(cal.time)}/${sdf2.format(cal.time)}"
-        mToDate = "$daysInMonth/${sdf.format(cal.time)}/${sdf2.format(cal.time)}"
+        mFromDate = "${sdf2.format(cal.time)}/${sdf.format(cal.time)}/01"
+        mToDate = "${sdf2.format(cal.time)}/${sdf.format(cal.time)}/$daysInMonth"
+        Log.e("getMonth","${mFromDate} ${mToDate}")
         getTask()
+    }
+
+    private fun convertDate(mDate: String): String {
+        val originalFormat = SimpleDateFormat("yyyy/MM/dd")
+        val targetFormat = SimpleDateFormat("dd/MM/yyyy")
+
+        val date = originalFormat.parse(mDate)
+        return targetFormat.format(date)
     }
 
     private fun bottomsheet() {
@@ -268,7 +268,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         if (mAdd) {
             ll_update.visibility = View.GONE
             tv_create.visibility = View.VISIBLE
-            mDate = date.toString("dd/MM/yyyy")
+            mDate = date.toString("yyyy/MM/dd")
             mTime = date.toString("HH:mm")
         } else {
             ll_update.visibility = View.VISIBLE
@@ -281,7 +281,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         }, requireContext())
 
 
-        tv_date.text = mDate
+        tv_date.text = convertDate(mDate)
         tv_time.text = mTime
         edit_description.setText(mDescription)
 
@@ -316,8 +316,8 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                 val m = if (mmMonth < 10) "0$mmMonth" else "$mmMonth"
 
 
-                val date = "$d/$m/$mYear"
-                tv_date.text = date
+                val date = "$mYear/$m/$d"
+                tv_date.text = convertDate(date)
                 mDate = date
             },
             year,
@@ -368,8 +368,8 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                 val task = Task(
                     mUuid,
                     edit_description.text.toString(),
-                    tv_date.text.toString(),
-                    tv_time.text.toString(),
+                    mDate,
+                    mTime,
                     color,
                     mReason,
                     mComplete,
@@ -389,7 +389,8 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                     date[2],
                     time[0],
                     time[1],
-                    mAlarm.toString()
+                    mAlarm.toString(),
+                    edit_description.text.toString()
                 )
                 viewModel.insert(task)
                 Timer().schedule(object : TimerTask() {
@@ -408,8 +409,8 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                 val task = Task(
                     mUuid,
                     edit_description.text.toString(),
-                    tv_date.text.toString(),
-                    tv_time.text.toString(),
+                    mDate,
+                    mTime,
                     color,
                     mReason,
                     mComplete,
@@ -432,7 +433,8 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
                     date[2],
                     time[0],
                     time[1],
-                    mAlarm.toString()
+                    mAlarm.toString(),
+                    edit_description.text.toString()
                 )
 
                 Timer().schedule(object : TimerTask() {
@@ -477,7 +479,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         y_old: String, hour_old: String, minute_old: String,
         d: String,
         m: String,
-        y: String, hour: String, minute: String, mAlarm: String
+        y: String, hour: String, minute: String, mAlarm: String, mDescription: String
     ) {
         val intent = Intent("android.intent.action.START_ALARM")
         val bundle = Bundle()
@@ -493,6 +495,7 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
         bundle.putString("hour", hour)
         bundle.putString("minute", minute)
         bundle.putString("mAlarm", mAlarm)
+        bundle.putString("description", mDescription)
         intent.putExtras(bundle)
         requireContext().sendBroadcast(intent)
     }
@@ -575,6 +578,124 @@ class TaskFragment : BaseFragment<TaskViewModel, FragmentTaskBinding>(R.layout.f
 
                 dialog.dismiss()
             }
+        }
+
+        img_close.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // below line is use to set cancelable to avoid
+        // closing of dialog box when clicking on the screen.
+        dialog.setCancelable(false)
+
+        // on below line we are setting
+        // content view to our view.
+        dialog.setContentView(view)
+
+        // on below line we are calling
+        // a show method to display a dialog.
+        dialog.show()
+    }
+
+    private fun showDeleteDialog() {
+        // on below line we are creating a new bottom sheet dialog.
+        val dialog = BottomSheetDialog(requireContext(), R.style.TransparentDialog)
+        // on below line we are inflating a layout file which we have created.
+        val view = layoutInflater.inflate(R.layout.dialog_delete, null)
+        val tv_done = view.findViewById(R.id.tv_done) as TextView
+        val img_close = view.findViewById(R.id.img_close) as ImageView
+        tv_done.setOnClickListener {
+            for (i in 0 until listSelect.size){
+                viewModel.delete(listSelect[i])
+                if (i == listSelect.size - 1) {
+                    Timer().schedule(object : TimerTask() {
+                        override fun run() {
+                            getSelect()
+                        }
+
+                    }, 1000)
+                    binding.tvDelete.visibility = View.GONE
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        img_close.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // below line is use to set cancelable to avoid
+        // closing of dialog box when clicking on the screen.
+        dialog.setCancelable(false)
+
+        // on below line we are setting
+        // content view to our view.
+        dialog.setContentView(view)
+
+        // on below line we are calling
+        // a show method to display a dialog.
+        dialog.show()
+    }
+
+    private fun showSelectDateDialog() {
+        // on below line we are creating a new bottom sheet dialog.
+        val dialog = BottomSheetDialog(requireContext(), R.style.TransparentDialog)
+        // on below line we are inflating a layout file which we have created.
+        val view = layoutInflater.inflate(R.layout.dialog_select_date, null)
+        val tv_done = view.findViewById(R.id.tv_done) as TextView
+        val tv_from_date = view.findViewById(R.id.tv_from_date) as TextView
+        val tv_to_date = view.findViewById(R.id.tv_to_date) as TextView
+        val img_close = view.findViewById(R.id.img_close) as ImageView
+
+
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        var selectDate = false
+
+        val date = getCurrentDateTime()
+        mFromDate = date.toString("yyyy/MM/dd")
+        mToDate = date.toString("yyyy/MM/dd")
+        tv_to_date.text = convertDate(mFromDate)
+        tv_from_date.text =  convertDate(mToDate)
+        val dpd = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { view, mYear, mMonth, mDay ->
+                // Display Selected date in textbox
+                val mmMonth = mMonth + 1
+                val d = if (mDay < 10) "0$mDay" else "$mDay"
+                val m = if (mmMonth < 10) "0$mmMonth" else "$mmMonth"
+
+                val date = "$mYear/$m/$d"
+                if (!selectDate) {
+                    mFromDate = date
+                    tv_from_date.text = convertDate(date)
+                }
+                else {
+                    mToDate = date
+                    tv_to_date.text = convertDate(date)
+                }
+            },
+            year,
+            month,
+            day
+        )
+
+        tv_from_date.setOnClickListener {
+            selectDate = false
+            dpd.show()
+        }
+
+        tv_to_date.setOnClickListener {
+            selectDate = true
+            dpd.show()
+        }
+
+        tv_done.setOnClickListener {
+            getTask()
+            dialog.dismiss()
         }
 
         img_close.setOnClickListener {

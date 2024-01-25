@@ -58,6 +58,7 @@ class ScreenReceiver : BroadcastReceiver() {
                     val hour = intent.extras!!.getString("hour")
                     val minute = intent.extras!!.getString("minute")
                     val mAlarm = intent.extras!!.getString("mAlarm")
+                    val description = intent.extras!!.getString("description")
 
                     //check update
                     if(d_old != d || m_old != m ||y_old != y ||hour_old != hour ||minute_old != minute){
@@ -81,6 +82,7 @@ class ScreenReceiver : BroadcastReceiver() {
                         minute!!.toInt(),
                         "android.intent.action.NOTIFICATION_MUSIC",
                         mAlarm!!.toInt(),
+                        description!!
                     )
 
                 } else if (intent.action.equals("android.intent.action.STOP_ALARM")) {
@@ -100,7 +102,8 @@ class ScreenReceiver : BroadcastReceiver() {
                         "android.intent.action.NOTIFICATION_MUSIC"
                     )
                 } else if (intent.action.equals("android.intent.action.NOTIFICATION_MUSIC")) {
-                    Log.e("keshav", "android.intent.action.NOTIFICATION_MUSIC")
+                    val description = intent.extras!!.getString("description")
+                    Log.e("keshav", "android.intent.action.NOTIFICATION_MUSIC: $description")
                     val alarmSound =
                         RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
@@ -113,8 +116,8 @@ class ScreenReceiver : BroadcastReceiver() {
 
                     val builder: NotificationCompat.Builder =
                         NotificationCompat.Builder(context, default_notification_channel_id)
-                    builder.setContentTitle("Task Manager")
-                    builder.setContentText("Please check the quest list")
+                    builder.setContentTitle("Task reminders")
+                    builder.setContentText(description)
                     builder.setSmallIcon(R.drawable.ic_app)
                     builder.setSound(alarmSound)
                     builder.setAutoCancel(true)
@@ -186,7 +189,8 @@ class ScreenReceiver : BroadcastReceiver() {
         hour: Int,
         minute: Int,
         action: String,
-        mAlarm: Int
+        mAlarm: Int,
+        description:String
     ) {
         if (alarmMgr == null)
             alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -196,6 +200,7 @@ class ScreenReceiver : BroadcastReceiver() {
         }
 
         val intent = Intent(context, ScreenReceiver::class.java)
+        intent.putExtra("description",description)
         intent.action = action
         val alarmIntent = intent.let { intent ->
             PendingIntent.getBroadcast(
